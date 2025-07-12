@@ -48,7 +48,7 @@ public class TouchManager : MonoBehaviour
 
         mobileInput = new MobileInput();
         mobileInput.TouchScreen.Enable();
-        mobileInput.TouchScreen.TouchHold.performed += LaunchChar;
+        //mobileInput.TouchScreen.TouchHold.performed += LaunchChar;
         InputSystem.EnableDevice(UnityEngine.InputSystem.Gyroscope.current);
         InputSystem.EnableDevice(UnityEngine.InputSystem.Accelerometer.current);
         //mobileInput.TouchScreen.Gyroscope.performed += UpdateGyroInput;
@@ -57,7 +57,7 @@ public class TouchManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        mobileInput.TouchScreen.TouchHold.performed -= LaunchChar;
+        //mobileInput.TouchScreen.TouchHold.performed -= LaunchChar;
         //mobileInput.TouchScreen.Gyroscope.performed -= UpdateGyroInput;
         mobileInput.TouchScreen.Accelerometer.performed -= UpdateAccelInput;
         mobileInput.Dispose();
@@ -67,41 +67,6 @@ public class TouchManager : MonoBehaviour
     {
         charMovement.LaunchCharacter();
     }
-
-    //private void Update()
-    //{
-    //    if (UnityEngine.InputSystem.Gyroscope.current != null)
-    //    {
-    //        Vector3 gyroInput = UnityEngine.InputSystem.Gyroscope.current.angularVelocity.ReadValue();
-    //        gyroText.text = $"Gyro Input: {gyroInput}";
-    //    }
-    //    else
-    //    {
-    //        gyroText.text = "Gyroscope not available.";
-    //    }
-    //}
-
-    //private void UpdateGyroInput(InputAction.CallbackContext context)
-    //{
-    //    Vector3 gyroInput = context.ReadValue<Vector3>();
-    //    gyroText.text = $"Gyro Input: {gyroInput}";
-
-    //    float tiltY = gyroInput.y;
-
-    //    if (tiltY > 0.1f)
-    //    {
-    //        turningText.text = "Tilting Left";
-    //    }
-    //    else if (tiltY < -0.1f)
-    //    {
-    //        turningText.text = "Tilting Right";
-    //    }
-    //    else
-    //    {
-    //        turningText.text = "Stable";
-    //    }
-    //}
-
     private void UpdateAccelInput(InputAction.CallbackContext context)
     {
         Vector3 accelInput = context.ReadValue<Vector3>();

@@ -14,15 +14,15 @@ public class CharacterMovement : MonoBehaviour
     public static CharacterMovement Instance { get; private set; }
 
     const float FORCEMAGNITUDE = 5f;
-    private Rigidbody2D rigidBody2D;
     [SerializeField] private Vector3 moveVelocity;
     public TextMeshProUGUI gyroText;
     public movementState currMovementState;
-    
+    public CharacterAnim charAnim {  get; private set; }
+
     private Vector2 originPos;
     private Vector3 spawnPoint;
     private TouchManager touchManager;
-    private CharacterAnim charAnim;
+    private Rigidbody2D rigidBody2D;
 
     private void Awake()
     {
@@ -40,6 +40,7 @@ public class CharacterMovement : MonoBehaviour
     void Start()
     {
         rigidBody2D = GetComponent<Rigidbody2D>();
+        rigidBody2D.bodyType = RigidbodyType2D.Kinematic; // Temporarily Disables RigidBody on Start
         touchManager = TouchManager.Instance;
         originPos = rigidBody2D.position;
         spawnPoint = transform.position; // Store initial spawn point
@@ -51,6 +52,12 @@ public class CharacterMovement : MonoBehaviour
     {
         this.moveVelocity = moveVelocity;
         rigidBody2D.linearVelocity = moveVelocity;
+    }
+
+    public void EnableRigidBody()
+    {
+        rigidBody2D.bodyType = RigidbodyType2D.Dynamic;
+        LaunchCharacter();
     }
 
     public void LaunchCharacter()

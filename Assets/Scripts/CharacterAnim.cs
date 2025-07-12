@@ -11,8 +11,12 @@ public class CharacterAnim : MonoBehaviour
 
     public void TriggerJumpAnim()
     {
-        Debug.Log("Triggering Jump Animation");
         anim.SetBool("isFalling", true);
         anim.SetTrigger("startJump");
+    }
+
+    public void TriggerSleepWakeAnim()
+    {
+        anim.SetTrigger("startGame");
     }
 }

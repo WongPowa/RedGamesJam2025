@@ -33,8 +33,6 @@ public class CameraMovement : MonoBehaviour
     {
         if (player != null)
         {
-            Debug.Log("current movement state " + charMovement.currMovementState);
-
             switch (charMovement.currMovementState)
             {
                 case movementState.Jumping:

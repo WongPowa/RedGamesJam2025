@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: 57794aa90b4bcc540bf8855cfc2c5673
+guid: 97787b506dd48c7438f7adbc23700d92
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5982143722631632099
-    second: sprite_sheet_2_0
-  - first:
-      213: 2602360151412994880
-    second: sprite_sheet_2_1
+      213: 3612581974417211702
+    second: AirAsiaPlane_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -40,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -78,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -126,7 +123,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: WindowsStoreApps
+    buildTarget: iOS
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -138,30 +135,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: iOS
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 0
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: sprite_sheet_2_0
+      name: AirAsiaPlane_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 360
-        height: 360
+        width: 1195
+        height: 1064
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -170,30 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d1b6531aaf72bfca0800000000000000
-      internalID: -5982143722631632099
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: sprite_sheet_2_1
-      rect:
-        serializedVersion: 2
-        x: 360
-        y: 0
-        width: 360
-        height: 360
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0437a9215c07d1420800000000000000
-      internalID: 2602360151412994880
+      spriteID: 6310e1b5a28722230800000000000000
+      internalID: 3612581974417211702
       vertices: []
       indices: 
       edges: []
@@ -202,7 +164,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 6fef6b69ee4eff44f9a09ca90a3e2c8b
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -212,8 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      sprite_sheet_2_0: -5982143722631632099
-      sprite_sheet_2_1: 2602360151412994880
+      AirAsiaPlane_0: 3612581974417211702
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
