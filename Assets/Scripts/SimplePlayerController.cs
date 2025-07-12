@@ -11,6 +11,10 @@ public class SimplePlayerController : MonoBehaviour
     [SerializeField] private bool useMobileInput = true;
     [SerializeField] private float touchSensitivity = 2f;
     
+    [Header("Respawn Settings")]
+    [SerializeField] private Vector3 spawnPoint;
+    [SerializeField] private bool useCurrentPositionAsSpawn = true;
+    
     private Rigidbody2D rb;
     private Vector2 velocity;
     
@@ -24,6 +28,12 @@ public class SimplePlayerController : MonoBehaviour
         
         rb.freezeRotation = true;
         rb.gravityScale = gravity / 9.81f;
+        
+        // Set spawn point to current position if enabled
+        if (useCurrentPositionAsSpawn)
+        {
+            spawnPoint = transform.position;
+        }
     }
     
     void Update()
@@ -75,7 +85,31 @@ public class SimplePlayerController : MonoBehaviour
         }
     }
     
-
+    public void SetSpawnPoint(Vector3 newSpawnPoint)
+    {
+        spawnPoint = newSpawnPoint;
+    }
     
-
+    public void RespawnPlayer()
+    {
+        // Reset position to spawn point
+        transform.position = spawnPoint;
+        
+        // Reset velocity
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
+        
+        // Reset any other player state if needed
+        velocity = Vector2.zero;
+        
+        Debug.Log("Player respawned at: " + spawnPoint);
+    }
+    
+    public Vector3 GetSpawnPoint()
+    {
+        return spawnPoint;
+    }
 } 

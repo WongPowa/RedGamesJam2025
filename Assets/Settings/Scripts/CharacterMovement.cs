@@ -8,6 +8,7 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField] private Vector3 moveVelocity;
     public TextMeshProUGUI gyroText;
     private Vector2 originPos;
+    private Vector3 spawnPoint;
 
     private TouchManager touchManager;
     private CharacterAnim charAnim;
@@ -17,6 +18,7 @@ public class CharacterMovement : MonoBehaviour
         rigidBody2D = GetComponent<Rigidbody2D>();
         touchManager = TouchManager.Instance;
         originPos = rigidBody2D.position;
+        spawnPoint = transform.position; // Store initial spawn point
         charAnim = GetComponent<CharacterAnim>();
     }
 
@@ -30,6 +32,34 @@ public class CharacterMovement : MonoBehaviour
     {
         SetVelocity(Vector2.up * 10f); // Example velocity, adjust as needed
         charAnim.TriggerJumpAnim();
+    }
+
+    public void SetSpawnPoint(Vector3 newSpawnPoint)
+    {
+        spawnPoint = newSpawnPoint;
+    }
+    
+    public void RespawnPlayer()
+    {
+        // Reset position to spawn point
+        transform.position = spawnPoint;
+        
+        // Reset velocity
+        if (rigidBody2D != null)
+        {
+            rigidBody2D.linearVelocity = Vector2.zero;
+            rigidBody2D.angularVelocity = 0f;
+        }
+        
+        // Reset origin position for tilt mechanics
+        originPos = new Vector2(spawnPoint.x, spawnPoint.y);
+        
+        Debug.Log("Player respawned at: " + spawnPoint);
+    }
+    
+    public Vector3 GetSpawnPoint()
+    {
+        return spawnPoint;
     }
 
     private void FixedUpdate()

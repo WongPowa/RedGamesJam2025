@@ -10,6 +10,13 @@ public class GameSession : MonoBehaviour
     
     [Header("Scoring")]
     [SerializeField] private float heightMultiplier = 10f;
+    [SerializeField] private bool showHeightDebug = false;
+    [SerializeField] private float minimumScoreHeight = 0f; // Minimum height needed to start scoring
+    
+    [Header("Respawn Settings")]
+    [SerializeField] private bool resetScoreOnRespawn = false;
+    [SerializeField] private int scorePenaltyOnRespawn = 0;
+    [SerializeField] private bool resetHeightProgressOnRespawn = false;
     
     [Header("UI References")]
     [SerializeField] private Text scoreText;
@@ -34,6 +41,7 @@ public class GameSession : MonoBehaviour
     public event System.Action<int> OnScoreChanged;
     public event System.Action OnGameStart;
     public event System.Action OnGameEnd;
+    public event System.Action OnPlayerRespawn;
     
     void Awake()
     {
@@ -95,6 +103,57 @@ public class GameSession : MonoBehaviour
         UpdateScoreDisplay();
     }
     
+    public void RespawnPlayer()
+    {
+        if (playerTransform != null)
+        {
+            // Use CharacterMovement for respawn
+            CharacterMovement characterMovement = playerTransform.GetComponent<CharacterMovement>();
+            if (characterMovement != null)
+            {
+                characterMovement.RespawnPlayer();
+            }
+            else
+            {
+                Debug.LogWarning("No CharacterMovement component found on player!");
+                return;
+            }
+            
+            // Handle score changes on respawn
+            if (resetScoreOnRespawn)
+            {
+                // Reset score and height tracking completely
+                currentScore = 0;
+                startingHeight = playerTransform.position.y; // Update starting height to current spawn point
+                maxHeightReached = startingHeight;
+            }
+            else
+            {
+                // Handle height progress reset separately
+                if (resetHeightProgressOnRespawn)
+                {
+                    // Reset height progress but keep current score
+                    startingHeight = playerTransform.position.y;
+                    maxHeightReached = startingHeight;
+                }
+                
+                // Apply score penalty if configured
+                if (scorePenaltyOnRespawn > 0)
+                {
+                    currentScore = Mathf.Max(0, currentScore - scorePenaltyOnRespawn);
+                }
+                
+                // If neither reset nor penalty, player keeps everything
+            }
+            
+            OnScoreChanged?.Invoke(currentScore);
+            UpdateScoreDisplay();
+            OnPlayerRespawn?.Invoke();
+            
+            Debug.Log($"Player respawned through GameSession. Current score: {currentScore}, Max height: {maxHeightReached:F2}");
+        }
+    }
+    
     public void EndGame()
     {
         if (!gameActive) return;
@@ -116,19 +175,34 @@ public class GameSession : MonoBehaviour
         if (playerTransform != null)
         {
             float currentHeight = playerTransform.position.y;
+            
+            // Update max height reached
             if (currentHeight > maxHeightReached)
             {
                 maxHeightReached = currentHeight;
             }
             
+            // Calculate height difference from starting point
             float heightFromStart = maxHeightReached - startingHeight;
-            int newScore = Mathf.FloorToInt(heightFromStart * heightMultiplier);
             
+            // Apply minimum height requirement
+            float scoringHeight = Mathf.Max(0, heightFromStart - minimumScoreHeight);
+            
+            // Calculate new score based on height
+            int newScore = Mathf.FloorToInt(scoringHeight * heightMultiplier);
+            
+            // Update score if it changed
             if (newScore != currentScore)
             {
                 currentScore = newScore;
                 OnScoreChanged?.Invoke(currentScore);
                 UpdateScoreDisplay();
+                
+                if (showHeightDebug)
+                {
+                    Debug.Log($"Height Score Update - Current: {currentHeight:F2}, Max: {maxHeightReached:F2}, " +
+                             $"Height from start: {heightFromStart:F2}, Score: {currentScore}");
+                }
             }
         }
     }
@@ -158,7 +232,18 @@ public class GameSession : MonoBehaviour
     void UpdateScoreDisplay()
     {
         if (scoreText != null)
-            scoreText.text = $"Score: {currentScore}";
+        {
+            if (showHeightDebug && playerTransform != null)
+            {
+                float currentHeight = playerTransform.position.y;
+                float heightFromStart = maxHeightReached - startingHeight;
+                scoreText.text = $"Score: {currentScore}\nHeight: {heightFromStart:F1}m\nMax: {maxHeightReached:F1}m";
+            }
+            else
+            {
+                scoreText.text = $"Score: {currentScore}";
+            }
+        }
     }
     
     void ShowGameOverScreen()

@@ -103,6 +103,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fallSpeed: 100
+  useGameSessionForRespawn: 1
 --- !u!61 &6439126562311546898
 BoxCollider2D:
   m_ObjectHideFlags: 0
