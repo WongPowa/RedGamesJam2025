@@ -302,7 +302,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d63318bf741660d449381824b0f7e9dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bounceForce: 20
+  bounceForce: 15
 --- !u!61 &271050591
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -625,9 +625,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 183581388}
-  spawnCooldown: 2
   obstaclePrefab: {fileID: 768659240}
+  springboardPrefab: {fileID: 271050589}
+  spawnCooldown: 2
   poolSize: 10
+  spawnYAbovePlayer: 10
+  springboardCooldown: 4
+  minSpringboardSpacing: 15
 --- !u!4 &841457760
 Transform:
   m_ObjectHideFlags: 0
