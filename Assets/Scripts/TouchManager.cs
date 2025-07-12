@@ -48,7 +48,7 @@ public class TouchManager : MonoBehaviour
 
         mobileInput = new MobileInput();
         mobileInput.TouchScreen.Enable();
-        //mobileInput.TouchScreen.TouchHold.performed += LaunchChar;
+        mobileInput.TouchScreen.TouchHold.performed += LaunchChar;
         InputSystem.EnableDevice(UnityEngine.InputSystem.Gyroscope.current);
         InputSystem.EnableDevice(UnityEngine.InputSystem.Accelerometer.current);
         //mobileInput.TouchScreen.Gyroscope.performed += UpdateGyroInput;
@@ -57,7 +57,7 @@ public class TouchManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        //mobileInput.TouchScreen.TouchHold.performed -= LaunchChar;
+        mobileInput.TouchScreen.TouchHold.performed -= LaunchChar;
         //mobileInput.TouchScreen.Gyroscope.performed -= UpdateGyroInput;
         mobileInput.TouchScreen.Accelerometer.performed -= UpdateAccelInput;
         mobileInput.Dispose();

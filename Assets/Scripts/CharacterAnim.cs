@@ -47,4 +47,12 @@ public class CharacterAnim : MonoBehaviour
             anim.SetBool("isFalling", true);
         }
     }
+
+    public void TriggerSleepWakeAnim()
+    {
+        if (anim != null)
+        {
+            anim.SetTrigger("startGame");
+        }
+    }
 }

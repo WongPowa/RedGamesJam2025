@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &7200544170932642857
+--- !u!1 &8058929579098172072
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,8 +8,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4053777387408715380}
-  - component: {fileID: 6855216410521512608}
+  - component: {fileID: 4851715493075452016}
+  - component: {fileID: 4867197301849927003}
   m_Layer: 0
   m_Name: ObstacleSpawner
   m_TagString: Untagged
@@ -17,13 +17,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4053777387408715380
+--- !u!4 &4851715493075452016
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7200544170932642857}
+  m_GameObject: {fileID: 8058929579098172072}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -4.488135, y: 4.450781, z: 0.05711535}
@@ -32,19 +32,31 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6855216410521512608
+--- !u!114 &4867197301849927003
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7200544170932642857}
+  m_GameObject: {fileID: 8058929579098172072}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 03971b6c25e8c00449170d3e9ca1b1ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
-  spawnCooldown: 2
   obstaclePrefab: {fileID: 0}
+  springboardPrefab: {fileID: 0}
+  cloudPrefab: {fileID: 0}
+  spawnCooldown: 2
   poolSize: 10
+  spawnYAbovePlayer: 5
+  approachThreshold: 20
+  bounceForceIncrement: 2
+  springboardDespawnDistance: 30
+  initialSpringboardHeight: 100
+  heightMultiplier: 1.2
+  cloudSpawnInterval: 3
+  cloudMinYOffset: 1
+  cloudMaxYOffset: 5
+  cloudDriftSpeed: 0.5

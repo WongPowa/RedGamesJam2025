@@ -13,7 +13,6 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        airplaneAnim.TriggerTakeOffAnim();
         charMovement.charAnim.TriggerSleepWakeAnim();
         isGameStarted = true;
     }
