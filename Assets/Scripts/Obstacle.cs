@@ -3,7 +3,7 @@ using UnityEngine;
 public class Obstacle : MonoBehaviour
 {
     public float fallSpeed;
-    [SerializeField] private bool useGameSessionForRespawn = true;
+    [SerializeField] private bool useGameSessionForGameOver = true;
     
     Rigidbody2D rb;
     void Start()
@@ -26,14 +26,14 @@ public class Obstacle : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            // Try to use GameSession for respawn first (provides game-specific behavior)
-            if (useGameSessionForRespawn && GameSession.Instance != null)
+            // Trigger game over instead of immediate respawn
+            if (useGameSessionForGameOver && GameSession.Instance != null)
             {
-                GameSession.Instance.RespawnPlayer();
+                GameSession.Instance.EndGame();
             }
             else
             {
-                // Fallback to direct CharacterMovement respawn
+                // Fallback: Direct respawn (old behavior)
                 CharacterMovement characterMovement = collision.gameObject.GetComponent<CharacterMovement>();
                 if (characterMovement != null)
                 {
@@ -45,7 +45,7 @@ public class Obstacle : MonoBehaviour
                 }
             }
             
-            Debug.Log("Player hit obstacle - respawning!");
+            Debug.Log("Player hit obstacle - game over!");
         }
     }
 }

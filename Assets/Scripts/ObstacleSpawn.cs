@@ -10,8 +10,10 @@ public class ObstacleSpawn : MonoBehaviour
 
     private float cooldownTimer = 1f;
     private float screenWidthWorldUnits;
+    private bool isSpawningEnabled = true;
 
     private Queue<GameObject> obstaclePool = new Queue<GameObject>();
+    private List<GameObject> activeObstacles = new List<GameObject>();
 
     private void Start()
     {
@@ -25,11 +27,18 @@ public class ObstacleSpawn : MonoBehaviour
             obj.SetActive(false);
             obstaclePool.Enqueue(obj);
         }
+        
+        // Listen to game events
+        if (GameSession.Instance != null)
+        {
+            GameSession.Instance.OnGameStart += EnableSpawning;
+            GameSession.Instance.OnGameEnd += DisableSpawningAndClearObstacles;
+        }
     }
 
     private void Update()
     {
-        if (player == null) return;
+        if (player == null || !isSpawningEnabled) return;
 
         // Check if player is in the bottom half of the screen
         Vector3 viewportPos = Camera.main.WorldToViewportPoint(player.position);
@@ -58,6 +67,12 @@ public class ObstacleSpawn : MonoBehaviour
 
         obstacle.transform.position = spawnPos;
         obstacle.SetActive(true);
+        
+        // Track active obstacles
+        if (!activeObstacles.Contains(obstacle))
+        {
+            activeObstacles.Add(obstacle);
+        }
     }
 
     private GameObject GetPooledObstacle()
@@ -78,5 +93,51 @@ public class ObstacleSpawn : MonoBehaviour
     {
         obstacle.SetActive(false);
         obstaclePool.Enqueue(obstacle);
+        
+        // Remove from active obstacles list
+        activeObstacles.Remove(obstacle);
+    }
+    
+    public void EnableSpawning()
+    {
+        isSpawningEnabled = true;
+        cooldownTimer = spawnCooldown; // Reset cooldown
+        Debug.Log("Obstacle spawning enabled");
+    }
+    
+    public void DisableSpawning()
+    {
+        isSpawningEnabled = false;
+        Debug.Log("Obstacle spawning disabled");
+    }
+    
+    public void ClearAllObstacles()
+    {
+        // Return all active obstacles to pool
+        for (int i = activeObstacles.Count - 1; i >= 0; i--)
+        {
+            if (activeObstacles[i] != null)
+            {
+                ReturnToPool(activeObstacles[i]);
+            }
+        }
+        activeObstacles.Clear();
+        Debug.Log("All obstacles cleared");
+    }
+    
+    public void DisableSpawningAndClearObstacles()
+    {
+        DisableSpawning();
+        ClearAllObstacles();
+    }
+    
+    void OnDestroy()
+    {
+        // Unsubscribe from events
+        if (GameSession.Instance != null)
+        {
+            GameSession.Instance.OnGameStart -= EnableSpawning;
+            GameSession.Instance.OnGameEnd -= DisableSpawningAndClearObstacles;
+        }
     }
 }

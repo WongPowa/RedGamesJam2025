@@ -54,6 +54,13 @@ public class CharacterMovement : MonoBehaviour
         // Reset origin position for tilt mechanics
         originPos = new Vector2(spawnPoint.x, spawnPoint.y);
         
+        // Reset animations
+        if (charAnim != null)
+        {
+            charAnim.ResetAnimations();
+            charAnim.SetIdleState();
+        }
+        
         Debug.Log("Player respawned at: " + spawnPoint);
     }
     
