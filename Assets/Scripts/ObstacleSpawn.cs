@@ -16,6 +16,11 @@ public class ObstacleSpawn : MonoBehaviour
 
     [Header("Springboard Settings")]
     public float approachThreshold = 20f;
+    private float globalBounceForce = 15f;
+    public float bounceForceIncrement = 2f;
+    public float springboardDespawnDistance = 30f;
+    private List<GameObject> activeSpringboards = new List<GameObject>();
+
     [Header("Springboard Spawn Height Progression")]
     public float initialSpringboardHeight = 100f;
     public float heightMultiplier = 1.05f;
@@ -98,6 +103,18 @@ public class ObstacleSpawn : MonoBehaviour
             SpawnCloud();
             cloudTimer = cloudSpawnInterval;
         }
+        // Despawn springboards too far below the player
+        for (int i = activeSpringboards.Count - 1; i >= 0; i--)
+        {
+            GameObject sb = activeSpringboards[i];
+            if (sb.activeInHierarchy && sb.transform.position.y < player.position.y - springboardDespawnDistance)
+            {
+                sb.SetActive(false);
+                springboardPool.Enqueue(sb);
+                activeSpringboards.RemoveAt(i);
+            }
+        }
+
     }
 
     private void SpawnObstacle()
@@ -126,7 +143,21 @@ public class ObstacleSpawn : MonoBehaviour
 
         springboard.transform.position = spawnPos;
         springboard.SetActive(true);
+
+        Springboard sb = springboard.GetComponent<Springboard>();
+        if (sb != null)
+        {
+            sb.SetBounceForce(globalBounceForce);
+        }
+
+        globalBounceForce += bounceForceIncrement;
+
+        // Track it for cleanup later
+        activeSpringboards.Add(springboard);
     }
+
+
+
 
     private void SpawnCloud()
     {
