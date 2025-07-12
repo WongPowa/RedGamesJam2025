@@ -84,7 +84,7 @@ public class ObstacleSpawn : MonoBehaviour
         // Obstacle spawn
         if (viewportPos.y <= 0.5f && cooldownTimer <= 0f)
         {
-            //SpawnObstacle(); // Optional: enable if needed
+            SpawnObstacle(); // Optional: enable if needed
             cooldownTimer = spawnCooldown;
         }
 
