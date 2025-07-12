@@ -1,17 +1,41 @@
 using UnityEngine;
 using TMPro;
 
+
+public enum movementState
+{
+    Jumping,
+    Falling,
+    Neutral,
+}
+
 public class CharacterMovement : MonoBehaviour
 {
+    public static CharacterMovement Instance { get; private set; }
+
     const float FORCEMAGNITUDE = 5f;
     private Rigidbody2D rigidBody2D;
     [SerializeField] private Vector3 moveVelocity;
     public TextMeshProUGUI gyroText;
+    public movementState currMovementState;
+    
     private Vector2 originPos;
     private Vector3 spawnPoint;
-
     private TouchManager touchManager;
     private CharacterAnim charAnim;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     void Start()
     {
@@ -19,6 +43,7 @@ public class CharacterMovement : MonoBehaviour
         touchManager = TouchManager.Instance;
         originPos = rigidBody2D.position;
         spawnPoint = transform.position; // Store initial spawn point
+        currMovementState = movementState.Neutral;
         charAnim = GetComponent<CharacterAnim>();
     }
 
@@ -43,7 +68,10 @@ public class CharacterMovement : MonoBehaviour
     {
         // Reset position to spawn point
         transform.position = spawnPoint;
-        
+
+        // Reset Camera Position
+        CameraMovement.Instance.ResetCamera();
+
         // Reset velocity
         if (rigidBody2D != null)
         {
@@ -60,6 +88,24 @@ public class CharacterMovement : MonoBehaviour
     public Vector3 GetSpawnPoint()
     {
         return spawnPoint;
+    }
+
+    private void Update()
+    {
+        float currVelocityY = rigidBody2D.linearVelocityY;
+
+        if (currVelocityY > 0.1f)
+        {
+            currMovementState = movementState.Jumping;
+        }
+        else if (currVelocityY < -0.1f)
+        {
+            currMovementState = movementState.Falling;
+        }
+        else
+        {
+            currMovementState = movementState.Neutral;
+        }
     }
 
     private void FixedUpdate()
