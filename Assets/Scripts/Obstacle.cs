@@ -19,7 +19,7 @@ public class Obstacle : MonoBehaviour
     }
     void OnBecameInvisible()
     {
-        FindFirstObjectByType<ObstacleSpawn>().ReturnToPool(gameObject);
+        //FindAnyObjectByType<ObstacleSpawn>().ReturnToPool(gameObject);
     }
 
     void OnCollisionEnter2D(Collision2D collision)
