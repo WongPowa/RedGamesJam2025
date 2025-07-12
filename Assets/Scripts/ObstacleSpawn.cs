@@ -7,6 +7,7 @@ public class ObstacleSpawn : MonoBehaviour
     public Transform player;
     public GameObject obstaclePrefab;
     public GameObject springboardPrefab;
+    public GameObject cloudPrefab;
 
     [Header("Spawn Settings")]
     public float spawnCooldown = 2f;
@@ -14,19 +15,30 @@ public class ObstacleSpawn : MonoBehaviour
     public float spawnYAbovePlayer = 10f;
 
     [Header("Springboard Settings")]
-    public float springboardCooldown = 4f;
-    public float minSpringboardSpacing = 15f; // minimum Y distance between springboards
+    public float approachThreshold = 20f;
+    [Header("Springboard Spawn Height Progression")]
+    public float initialSpringboardHeight = 100f;
+    public float heightMultiplier = 1.05f;
+
+    private float nextSpringboardY;
+    private float currentSpringboardGap;
+    private float lastSpringboardY = float.MinValue;
+
+    [Header("Cloud Settings")]
+    public float cloudSpawnInterval = 3f;
+    public float cloudMinYOffset = 1f;
+    public float cloudMaxYOffset = 5f;
+    public float cloudDriftSpeed = 0.5f;
 
     private float cooldownTimer = 1f;
-    private float springboardTimer = 0f;
+    private float cloudTimer = 0f;
     private float screenWidthWorldUnits;
-    private float lastSpringboardY = float.MinValue;
-    private float lastVerticalSpeed;
 
     private Rigidbody2D playerRb;
 
     private Queue<GameObject> obstaclePool = new Queue<GameObject>();
     private Queue<GameObject> springboardPool = new Queue<GameObject>();
+    private Queue<GameObject> cloudPool = new Queue<GameObject>();
 
     private void Start()
     {
@@ -35,7 +47,6 @@ public class ObstacleSpawn : MonoBehaviour
 
         playerRb = player.GetComponent<Rigidbody2D>();
 
-        // Pre-instantiate both obstacle and springboard pools
         for (int i = 0; i < poolSize; i++)
         {
             GameObject obj = Instantiate(obstaclePrefab);
@@ -45,7 +56,14 @@ public class ObstacleSpawn : MonoBehaviour
             GameObject spring = Instantiate(springboardPrefab);
             spring.SetActive(false);
             springboardPool.Enqueue(spring);
+
+            GameObject cloud = Instantiate(cloudPrefab);
+            cloud.SetActive(false);
+            cloudPool.Enqueue(cloud);
         }
+
+        nextSpringboardY = player.position.y + initialSpringboardHeight;
+        currentSpringboardGap = initialSpringboardHeight;
     }
 
     private void Update()
@@ -53,34 +71,33 @@ public class ObstacleSpawn : MonoBehaviour
         if (player == null || playerRb == null) return;
 
         Vector3 viewportPos = Camera.main.WorldToViewportPoint(player.position);
-        float verticalSpeed = playerRb.linearVelocity.y;
 
-        // Update timers
+        // Timers
         if (cooldownTimer > 0f) cooldownTimer -= Time.deltaTime;
-        if (springboardTimer > 0f) springboardTimer -= Time.deltaTime;
+        if (cloudTimer > 0f) cloudTimer -= Time.deltaTime;
 
-        // 1. Normal obstacle spawn if in bottom half
+        // Obstacle spawn
         if (viewportPos.y <= 0.5f && cooldownTimer <= 0f)
         {
-            SpawnObstacle();
+            //SpawnObstacle(); // Optional: enable if needed
             cooldownTimer = spawnCooldown;
         }
 
-        // 2. Springboard spawn if:
-        // - In middle of screen
-        // - Moving upward AND slowing down
-        // - Not too close to last springboard
-        if (viewportPos.y > 0.4f && viewportPos.y < 0.6f &&
-            verticalSpeed > 0f && verticalSpeed < lastVerticalSpeed &&
-            springboardTimer <= 0f &&
-            Mathf.Abs(player.position.y - lastSpringboardY) >= minSpringboardSpacing)
+        // Springboard spawn based on vertical height milestones
+        if (player.position.y + approachThreshold >= nextSpringboardY)
         {
-            SpawnSpringboard();
-            springboardTimer = springboardCooldown;
-            lastSpringboardY = player.position.y;
+            SpawnSpringboardAtHeight(nextSpringboardY);
+            lastSpringboardY = nextSpringboardY;
+            currentSpringboardGap *= heightMultiplier;
+            nextSpringboardY += currentSpringboardGap;
         }
 
-        lastVerticalSpeed = verticalSpeed;
+        // Cloud spawn
+        if (cloudTimer <= 0f)
+        {
+            SpawnCloud();
+            cloudTimer = cloudSpawnInterval;
+        }
     }
 
     private void SpawnObstacle()
@@ -97,18 +114,37 @@ public class ObstacleSpawn : MonoBehaviour
         obstacle.SetActive(true);
     }
 
-    private void SpawnSpringboard()
+    private void SpawnSpringboardAtHeight(float height)
     {
         GameObject springboard = GetFromPool(springboardPool, springboardPrefab);
         if (springboard == null) return;
 
         Vector2 spawnPos = new Vector2(
             Random.Range(-screenWidthWorldUnits, screenWidthWorldUnits),
-            player.position.y + spawnYAbovePlayer
+            height
         );
 
         springboard.transform.position = spawnPos;
         springboard.SetActive(true);
+    }
+
+    private void SpawnCloud()
+    {
+        GameObject cloud = GetFromPool(cloudPool, cloudPrefab);
+        if (cloud == null) return;
+
+        Vector2 spawnPos = new Vector2(
+            Random.Range(-screenWidthWorldUnits, screenWidthWorldUnits),
+            player.position.y + spawnYAbovePlayer + Random.Range(cloudMinYOffset, cloudMaxYOffset)
+        );
+
+        cloud.transform.position = spawnPos;
+        cloud.SetActive(true);
+
+        if (cloud.TryGetComponent<Rigidbody2D>(out var rb))
+        {
+            rb.linearVelocity = new Vector2(Random.Range(-cloudDriftSpeed, cloudDriftSpeed), 0f);
+        }
     }
 
     private GameObject GetFromPool(Queue<GameObject> pool, GameObject prefab)
@@ -118,18 +154,25 @@ public class ObstacleSpawn : MonoBehaviour
             return pool.Dequeue();
         }
 
-        // Optional: expand pool if needed
         GameObject newObj = Instantiate(prefab);
         return newObj;
     }
 
-    public void ReturnToPool(GameObject obj, bool isSpringboard = false)
+    public void ReturnToPool(GameObject obj, string type = "obstacle")
     {
         obj.SetActive(false);
 
-        if (isSpringboard)
-            springboardPool.Enqueue(obj);
-        else
-            obstaclePool.Enqueue(obj);
+        switch (type)
+        {
+            case "springboard":
+                springboardPool.Enqueue(obj);
+                break;
+            case "cloud":
+                cloudPool.Enqueue(obj);
+                break;
+            default:
+                obstaclePool.Enqueue(obj);
+                break;
+        }
     }
 }
