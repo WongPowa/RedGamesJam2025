@@ -1,0 +1,74 @@
+{
+    "name": "MobileInput",
+    "maps": [
+        {
+            "name": "TouchScreen",
+            "id": "f1dfe982-5f79-4ac3-9709-5ccd8a2ffc95",
+            "actions": [
+                {
+                    "name": "TouchHold",
+                    "type": "Button",
+                    "id": "33ec25e5-914d-42ef-8c87-bede0fbf5d77",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Gyroscope",
+                    "type": "Value",
+                    "id": "2270eb0b-9d5c-4d71-adea-7654a2197414",
+                    "expectedControlType": "Vector3",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Accelerometer",
+                    "type": "Value",
+                    "id": "94b58ec2-08f3-410f-8097-a0e9bd7a9ca9",
+                    "expectedControlType": "Vector3",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "2d91651c-e57d-425d-810c-724af665ff97",
+                    "path": "<Touchscreen>/Press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TouchHold",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0565a4a6-0edf-4054-bbc9-a090d5c3d1b1",
+                    "path": "<Gyroscope>/angularVelocity",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Gyroscope",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "37c61606-342d-4a0a-ae25-34f3e6b32df1",
+                    "path": "<Accelerometer>/acceleration",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Accelerometer",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
