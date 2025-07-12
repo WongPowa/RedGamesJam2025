@@ -50,6 +50,9 @@ TagManager:
   - name: city
     uniqueID: 1346485755
     locked: 0
+  - name: obstacle
+    uniqueID: 152240517
+    locked: 0
   - name: player
     uniqueID: 408537203
     locked: 0
