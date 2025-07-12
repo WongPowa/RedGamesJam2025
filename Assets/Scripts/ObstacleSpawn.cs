@@ -84,7 +84,7 @@ public class ObstacleSpawn : MonoBehaviour
         // Obstacle spawn
         if (viewportPos.y <= 0.5f && cooldownTimer <= 0f)
         {
-            //SpawnObstacle(); // Optional: enable if needed
+            SpawnObstacle(); // Optional: enable if needed
             cooldownTimer = spawnCooldown;
         }
 
@@ -116,15 +116,18 @@ public class ObstacleSpawn : MonoBehaviour
         }
 
     }
-
     private void SpawnObstacle()
     {
         GameObject obstacle = GetFromPool(obstaclePool, obstaclePrefab);
         if (obstacle == null) return;
 
+        Vector3 screenTopRight = Camera.main.ViewportToWorldPoint(new Vector3(1, 1, 0));
+        Vector3 screenTopLeft = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, 0));
+        float topY = screenTopRight.y + 1f;
+
         Vector2 spawnPos = new Vector2(
-            Random.Range(-screenWidthWorldUnits, screenWidthWorldUnits),
-            player.position.y + spawnYAbovePlayer
+            Random.Range(screenTopLeft.x, screenTopRight.x),
+            topY
         );
 
         obstacle.transform.position = spawnPos;

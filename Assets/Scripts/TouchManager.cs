@@ -23,9 +23,6 @@ public class TouchManager : MonoBehaviour
     public static TouchManager Instance { get; private set; }
     public CharacterMovement charMovement;
     private MobileInput mobileInput;
-    public TextMeshProUGUI gyroText;
-    public TextMeshProUGUI accelText;
-    public TextMeshProUGUI turningText;
     public CurrentTiltStateData currentTilt;
 
     private void Awake()
@@ -48,7 +45,7 @@ public class TouchManager : MonoBehaviour
 
         mobileInput = new MobileInput();
         mobileInput.TouchScreen.Enable();
-        mobileInput.TouchScreen.TouchHold.performed += LaunchChar;
+        //mobileInput.TouchScreen.TouchHold.performed += LaunchChar;
         InputSystem.EnableDevice(UnityEngine.InputSystem.Gyroscope.current);
         InputSystem.EnableDevice(UnityEngine.InputSystem.Accelerometer.current);
         //mobileInput.TouchScreen.Gyroscope.performed += UpdateGyroInput;
@@ -57,7 +54,7 @@ public class TouchManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        mobileInput.TouchScreen.TouchHold.performed -= LaunchChar;
+        //mobileInput.TouchScreen.TouchHold.performed -= LaunchChar;
         //mobileInput.TouchScreen.Gyroscope.performed -= UpdateGyroInput;
         mobileInput.TouchScreen.Accelerometer.performed -= UpdateAccelInput;
         mobileInput.Dispose();
@@ -72,29 +69,21 @@ public class TouchManager : MonoBehaviour
         Vector3 accelInput = context.ReadValue<Vector3>();
         currentTilt.acceleration = accelInput;
 
-        if (accelText != null)
-            accelText.text = $"Accel Input: {accelInput}";
-
         float tiltX = accelInput.x;
 
-        if (turningText != null)
+        if (tiltX > 0.1f)
         {
-            if (tiltX > 0.1f)
-            {
-                currentTilt.state = TiltingState.Right;
-                turningText.text = "Tilting Right";
-            }
-            else if (tiltX < -0.1f)
-            {
-                currentTilt.state = TiltingState.Left;
-                turningText.text = "Tilting Left";
-            }
-            else
-            {
-                currentTilt.state = TiltingState.Stable;
-                turningText.text = "Stable";
-            }
+            currentTilt.state = TiltingState.Right;
         }
+        else if (tiltX < -0.1f)
+        {
+            currentTilt.state = TiltingState.Left;
+        }
+        else
+        {
+            currentTilt.state = TiltingState.Stable;
+        }
+        
     }
 
 

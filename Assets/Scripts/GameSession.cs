@@ -98,6 +98,7 @@ public class GameSession : MonoBehaviour
         startingHeight = playerTransform != null ? playerTransform.position.y : 0f;
         maxHeightReached = startingHeight;
         scoreSubmitted = false;
+        CharacterMovement.Instance.LaunchCharacter();
         
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);

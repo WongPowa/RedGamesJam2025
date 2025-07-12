@@ -13,9 +13,8 @@ public class CharacterMovement : MonoBehaviour
 {
     public static CharacterMovement Instance { get; private set; }
 
-    const float FORCEMAGNITUDE = 5f;
+    const float FORCEMAGNITUDE = 7f;
     [SerializeField] private Vector3 moveVelocity;
-    public TextMeshProUGUI gyroText;
     public movementState currMovementState;
     public CharacterAnim charAnim {  get; private set; }
 
@@ -62,7 +61,7 @@ public class CharacterMovement : MonoBehaviour
 
     public void LaunchCharacter()
     {
-        SetVelocity(Vector2.up * 10f); // Example velocity, adjust as needed
+        SetVelocity(Vector2.up * 15f); // Example velocity, adjust as needed
         charAnim.TriggerJumpAnim();
     }
 
@@ -132,19 +131,15 @@ public class CharacterMovement : MonoBehaviour
             {
                 case TiltingState.Left:
                     tiltVector = Vector2.left * touchManager.currentTilt.acceleration.magnitude * FORCEMAGNITUDE;
-                    gyroText.text = $"tiltVecLeft: {tiltVector}";
                     rigidBody2D.AddForce(tiltVector);
                     break;
                 case TiltingState.Right:
                     tiltVector = Vector2.right * touchManager.currentTilt.acceleration.magnitude * FORCEMAGNITUDE;
-                    gyroText.text = $"tiltVecRight: {tiltVector}";
                     rigidBody2D.AddForce(tiltVector);
                     break;
                 case TiltingState.Stable:
                     float toOriginDistanceX = -rigidBody2D.position.x; // Horizontal Direction toward origin
                     float absDistance = Mathf.Abs(toOriginDistanceX - originPos.x);
-
-                    gyroText.text = $"toOriginDistanceX: {toOriginDistanceX} | absDistance: {absDistance}";
 
                     if (absDistance > 0.1f) // Small threshold to avoid jitter at origin
                     {
@@ -159,17 +154,11 @@ public class CharacterMovement : MonoBehaviour
                         tempVelocity.x = 0f; // Stop horizontal movement
                         rigidBody2D.linearVelocity = tempVelocity;
                         this.transform.position = new Vector2(originPos.x, transform.position.y);
-                        gyroText.text = $"At origin: No force";
                     }
                     break;
                 default:
-                    gyroText.text = "Unknown tilt state";
                     break;
             }
-        }
-        else
-        {
-            gyroText.text = "TouchManager not initialized";
         }
     }
 }
