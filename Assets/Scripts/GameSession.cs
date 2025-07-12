@@ -24,7 +24,7 @@ public class GameSession : MonoBehaviour
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private InputField playerNameInput;
     [SerializeField] private Button submitScoreButton;
-    [SerializeField] private Button restartButton;
+    [SerializeField] private Button retryButton; // Single retry button
     
     [Header("Player Reference")]
     [SerializeField] private Transform playerTransform;
@@ -37,6 +37,9 @@ public class GameSession : MonoBehaviour
     
     public int CurrentScore => currentScore;
     public bool IsGameActive => gameActive;
+    public float MaxHeightReached => maxHeightReached;
+    public float StartingHeight => startingHeight;
+    public Transform PlayerTransform => playerTransform;
     
     public event System.Action<int> OnScoreChanged;
     public event System.Action OnGameStart;
@@ -80,8 +83,8 @@ public class GameSession : MonoBehaviour
         if (submitScoreButton != null)
             submitScoreButton.onClick.AddListener(SubmitCurrentScore);
             
-        if (restartButton != null)
-            restartButton.onClick.AddListener(RestartGame);
+        if (retryButton != null)
+            retryButton.onClick.AddListener(RetryGame);
             
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
@@ -101,6 +104,16 @@ public class GameSession : MonoBehaviour
             
         OnGameStart?.Invoke();
         UpdateScoreDisplay();
+        
+        Debug.Log("Game started!");
+    }
+    
+    public void RetryGame()
+    {
+        // Reset player position and start new game
+        RespawnPlayer();
+        StartGame();
+        Debug.Log("Game retried!");
     }
     
     public void RespawnPlayer()
@@ -166,8 +179,9 @@ public class GameSession : MonoBehaviour
             HighscoreManager.Instance.AddPlayTime(sessionTime);
         }
         
-        ShowGameOverScreen();
         OnGameEnd?.Invoke();
+        
+        Debug.Log($"Game ended! Final score: {currentScore}");
     }
     
     void UpdateScore()
@@ -226,8 +240,6 @@ public class GameSession : MonoBehaviour
         OnScoreChanged?.Invoke(currentScore);
         UpdateScoreDisplay();
     }
-    
-
     
     void UpdateScoreDisplay()
     {
@@ -289,11 +301,6 @@ public class GameSession : MonoBehaviour
             if (buttonText != null)
                 buttonText.text = "Score Submitted";
         }
-    }
-    
-    public void RestartGame()
-    {
-        StartGame();
     }
     
     public void PauseGame()
