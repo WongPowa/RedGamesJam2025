@@ -21,7 +21,7 @@ public class Obstacle : MonoBehaviour
     {
         if (transform.position.y < Camera.main.ViewportToWorldPoint(Vector3.zero).y - 1f)
         {
-            FindAnyObjectByType<ObstacleSpawn>().ReturnToPool(gameObject);
+            FindAnyObjectByType<ObstacleSpawn>().ReturnToPool(gameObject, "Obstacle");
         }
     }
 
