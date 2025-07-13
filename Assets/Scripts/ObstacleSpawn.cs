@@ -41,6 +41,7 @@ public class ObstacleSpawn : MonoBehaviour
     private Rigidbody2D playerRb;
     private List<GameObject> activeObstacles = new();
     private List<GameObject> activeClouds = new();
+    public bool isSpawningActive = false;
 
     public static ObstacleSpawn Instance { get; private set; }
 
@@ -54,6 +55,7 @@ public class ObstacleSpawn : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        isSpawningActive = false;
     }
 
     private void Start()
@@ -78,6 +80,7 @@ public class ObstacleSpawn : MonoBehaviour
 
     private void Update()
     {
+        if (!isSpawningActive) return;
         if (player == null || playerRb == null) return;
 
         cooldownTimer -= Time.deltaTime;
@@ -144,6 +147,8 @@ public class ObstacleSpawn : MonoBehaviour
 
         if (cloud.TryGetComponent<Rigidbody2D>(out var rb))
             rb.linearVelocity = new Vector2(Random.Range(-cloudDriftSpeed, cloudDriftSpeed), 0f);
+
+        activeClouds.Add(cloud);
     }
 
     private void DespawnOldSpringboards()
@@ -214,5 +219,36 @@ public class ObstacleSpawn : MonoBehaviour
             objectPools[PoolType.Cloud].Enqueue(cloud);
         }
         activeClouds.Clear();
+    }
+
+    public void StartSpawning()
+    {
+        isSpawningActive = true;
+        cooldownTimer = 0f;
+        cloudTimer = 0f;
+    }
+
+    public void StopSpawning()
+    {
+        isSpawningActive = false;
+        cooldownTimer = 0f;
+        cloudTimer = 0f;
+    }
+
+    public void ResetSpawner()
+    {
+        cooldownTimer = 0f;
+        cloudTimer = 0f;
+        if (player != null)
+        {
+            nextSpringboardY = player.position.y + initialSpringboardHeight;
+        }
+        else
+        {
+            nextSpringboardY = initialSpringboardHeight;
+        }
+        currentSpringboardGap = initialSpringboardHeight;
+        globalBounceForce = 15f;
+        ClearAllObstacles();
     }
 }

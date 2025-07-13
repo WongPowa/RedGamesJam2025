@@ -120,4 +120,11 @@ AnimationClip:
   m_EulerEditorCurves: []
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
-  m_Events: []
+  m_Events:
+  - time: 1.4833333
+    functionName: WakeUpAnimationFinished
+    data: 
+    objectReferenceParameter: {fileID: 11500000, guid: 3b5ea50efc1f26645b788ce120e65ab0, type: 3}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0

@@ -16,5 +16,7 @@ public class GameManager : MonoBehaviour
         airplaneAnim.TriggerTakeOffAnim();
         charMovement.charAnim.TriggerSleepWakeAnim();
         isGameStarted = true;
+        if (ObstacleSpawn.Instance != null)
+            ObstacleSpawn.Instance.StartSpawning();
     }
 }
