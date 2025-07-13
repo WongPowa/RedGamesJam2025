@@ -116,7 +116,6 @@ public class ObstacleSpawn : MonoBehaviour
         }
 
     }
-
     private void SpawnObstacle()
     {
         GameObject obstacle = GetFromPool(obstaclePool, obstaclePrefab);
