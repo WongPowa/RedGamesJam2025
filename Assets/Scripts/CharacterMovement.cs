@@ -44,6 +44,7 @@ public class CharacterMovement : MonoBehaviour
     private bool canDash = true;
     private bool isDashing = false;
 
+    public float launchSpeed = 20f;
     private void Awake()
     {
         if (Instance == null)
@@ -82,7 +83,7 @@ public class CharacterMovement : MonoBehaviour
 
     public void LaunchCharacter()
     {
-        SetVelocity(Vector2.up * 15f); // Example velocity, adjust as needed
+        SetVelocity(Vector2.up * launchSpeed); // Example velocity, adjust as needed
         charAnim.TriggerJumpAnim();
     }
 
