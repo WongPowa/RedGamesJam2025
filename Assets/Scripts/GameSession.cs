@@ -7,7 +7,7 @@ public class GameSession : MonoBehaviour
     [SerializeField] private int currentScore = 0;
     [SerializeField] private float sessionStartTime;
     [SerializeField] private bool gameActive = false;
-    [SerializeField] private float fallBuffer = 2f;
+    [SerializeField] private float fallBuffer = 5f;
 
     [Header("Scoring")]
     [SerializeField] private float heightMultiplier = 10f;
