@@ -44,5 +44,11 @@ TagManager:
   - name: player
     uniqueID: 3357285579
     locked: 0
+  - name: ui
+    uniqueID: 928983577
+    locked: 0
+  - name: obstacles
+    uniqueID: 2633757983
+    locked: 0
   m_RenderingLayers:
   - Default
