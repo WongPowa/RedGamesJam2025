@@ -15,9 +15,12 @@ public class Obstacle : MonoBehaviour
     {
         rb.linearVelocityY = -fallSpeed * Time.deltaTime;
     }
-    void OnBecameInvisible()
+    void Update()
     {
-        //FindAnyObjectByType<ObstacleSpawn>().ReturnToPool(gameObject);
+        if (transform.position.y < Camera.main.ViewportToWorldPoint(Vector3.zero).y - 1f)
+        {
+            FindAnyObjectByType<ObstacleSpawn>().ReturnToPool(gameObject);
+        }
     }
 
 }
