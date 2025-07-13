@@ -27,6 +27,7 @@ public class CharacterMovement : MonoBehaviour
     public movementState currMovementState;
     public CharacterAnim charAnim {  get; private set; }
 
+    private characterBuds currBud = characterBuds.Biggie; // Default character bud, can be changed later
     private Vector2 originPos;
     private Vector3 spawnPoint;
     private TouchManager touchManager;
@@ -224,23 +225,23 @@ public class CharacterMovement : MonoBehaviour
             return;
         }
 
-        if (isDashing) return
+        if (isDashing) return;
 
-            float currVelocityY = rigidBody2D.linearVelocityY;
+        float currVelocityY = rigidBody2D.linearVelocityY;
 
-            if (currVelocityY > 0.1f)
-            {
-                currMovementState = movementState.Jumping;
-            }
-            else if (currVelocityY < -0.1f)
-            {
-                currMovementState = movementState.Falling;
-            }
-            else
-            {
-                currMovementState = movementState.Neutral;
-            }
+        if (currVelocityY > 0.1f)
+        {
+            currMovementState = movementState.Jumping;
         }
+        else if (currVelocityY < -0.1f)
+        {
+            currMovementState = movementState.Falling;
+        }
+        else
+        {
+            currMovementState = movementState.Neutral;
+        }
+        
     }
 
     private void FixedUpdate()

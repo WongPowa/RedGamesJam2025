@@ -234,7 +234,10 @@ public class GameSession : MonoBehaviour
     {
         if (playerTransform != null)
         {
-            if (playerTransform.position.y < -10f)
+            // Get the bottom-left corner of the screen in world space
+            float screenBottomY = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, Camera.main.nearClipPlane)).y;
+
+            if (playerTransform.position.y < screenBottomY)
             {
                 EndGame();
             }

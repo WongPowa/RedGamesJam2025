@@ -10,7 +10,7 @@ public class ObstacleSpawn : MonoBehaviour
     public GameObject cloudPrefab;
 
     [Header("Spawn Settings")]
-    public float spawnCooldown = 2f;
+    public float spawnCooldown = 2f;    
     public int poolSize = 10;
     public float spawnYOffset = 2f;
 

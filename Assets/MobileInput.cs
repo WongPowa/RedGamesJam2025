@@ -153,6 +153,17 @@ public partial class @MobileInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""2bb1b3e2-130b-495c-808a-a1131afabfad"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""TouchPosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""0565a4a6-0edf-4054-bbc9-a090d5c3d1b1"",
                     ""path"": ""<Gyroscope>/angularVelocity"",
                     ""interactions"": """",
@@ -188,6 +199,17 @@ public partial class @MobileInput: IInputActionCollection2, IDisposable
                     ""name"": """",
                     ""id"": ""3df2f60a-b42e-414f-ba93-bead3bfd54b5"",
                     ""path"": ""<Pointer>/press"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""TouchPress"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""316be8d5-e56c-4081-9ea4-eee0bd69d5f4"",
+                    ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
