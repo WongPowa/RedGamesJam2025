@@ -126,7 +126,7 @@ public class ObstacleSpawn : MonoBehaviour
         if (springboard == null) return;
 
         float spawnX = spawnXOffsets[Random.Range(0, spawnXOffsets.Length)];
-        springboard.transform.position = new Vector2(spawnX, GetCurrentScreenTopY() + spawnYOffset);
+        springboard.transform.position = new Vector2(spawnX, GetCurrentScreenTopY());
 
         springboard.SetActive(true);
         if (springboard.TryGetComponent(out Springboard sb))

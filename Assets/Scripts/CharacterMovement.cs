@@ -287,4 +287,14 @@ public class CharacterMovement : MonoBehaviour
             }
         }
     }
+    public void MoveLeft()
+    {
+        Vector2 tiltVector = Vector2.left * FORCEMAGNITUDE * 25f;
+        rigidBody2D.AddForce(tiltVector);
+    }
+    public void MoveRight()
+    {
+        Vector2 tiltVector = Vector2.right  * FORCEMAGNITUDE * 25f;
+        rigidBody2D.AddForce(tiltVector);
+    }
 }
