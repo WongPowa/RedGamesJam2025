@@ -22,6 +22,9 @@ public class CharacterMovement : MonoBehaviour
     private Vector3 spawnPoint;
     private TouchManager touchManager;
     private Rigidbody2D rigidBody2D;
+    private bool isStunned = false;
+    private float stunTimer = 0f;
+    private float stunFallVelocity = -10f;
 
     private void Awake()
     {
@@ -103,8 +106,32 @@ public class CharacterMovement : MonoBehaviour
         return spawnPoint;
     }
 
+    public void Stun(float duration)
+    {
+        isStunned = true;
+        stunTimer = duration;
+        ForceFall();
+    }
+
+    public void ForceFall()
+    {
+        if (rigidBody2D != null)
+        {
+            rigidBody2D.linearVelocity = new Vector2(0, stunFallVelocity);
+        }
+    }
+
     private void Update()
     {
+        if (isStunned)
+        {
+            stunTimer -= Time.deltaTime;
+            if (stunTimer <= 0f)
+            {
+                isStunned = false;
+            }
+            return;
+        }
         float currVelocityY = rigidBody2D.linearVelocityY;
 
         if (currVelocityY > 0.1f)
@@ -123,6 +150,7 @@ public class CharacterMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (isStunned) return;
         if (touchManager != null)
         {
             Vector2 tiltVector;

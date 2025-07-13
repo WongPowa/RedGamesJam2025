@@ -3,7 +3,6 @@ using UnityEngine;
 public class Obstacle : MonoBehaviour
 {
     public float fallSpeed;
-    [SerializeField] private bool useGameSessionForGameOver = true;
     
     Rigidbody2D rb;
     void Start()
@@ -27,28 +26,17 @@ public class Obstacle : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        //if (collision.gameObject.CompareTag("Player"))
-        //{
-        //    // Trigger game over instead of immediate respawn
-        //    if (useGameSessionForGameOver && GameSession.Instance != null)
-        //    {
-        //        GameSession.Instance.EndGame();
-        //    }
-        //    else
-        //    {
-        //        // Fallback: Direct respawn (old behavior)
-        //        CharacterMovement characterMovement = collision.gameObject.GetComponent<CharacterMovement>();
-        //        if (characterMovement != null)
-        //        {
-        //            characterMovement.RespawnPlayer();
-        //        }
-        //        else
-        //        {
-        //            Debug.LogWarning("No CharacterMovement component found on player!");
-        //        }
-        //    }
-            
-        //    Debug.Log("Player hit obstacle - game over!");
-        //}
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            CharacterMovement characterMovement = collision.gameObject.GetComponent<CharacterMovement>();
+            if (characterMovement != null)
+            {
+                characterMovement.Stun(1.0f); // 1 second stun, adjust as needed
+            }
+            // Enable dynamic physics and bounce obstacle away from player
+            rb.bodyType = RigidbodyType2D.Dynamic;
+            Vector2 bounceDir = (rb.position - (Vector2)collision.transform.position).normalized;
+            rb.AddForce(bounceDir * 5f + Vector2.up * 2f, ForceMode2D.Impulse); // Adjust force as needed
+        }
     }
 }

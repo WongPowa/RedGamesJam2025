@@ -32,6 +32,11 @@ public class Springboard : MonoBehaviour
         else
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, -2f);
+            CharacterMovement characterMovement = collision.GetComponent<CharacterMovement>();
+            if (characterMovement != null)
+            {
+                characterMovement.Stun(1.0f); // 1 second stun, adjust as needed
+            }
         }
     }
 
