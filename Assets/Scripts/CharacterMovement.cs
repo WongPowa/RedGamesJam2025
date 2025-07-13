@@ -84,6 +84,7 @@ public class CharacterMovement : MonoBehaviour
     {
         SetVelocity(Vector2.up * 15f); // Example velocity, adjust as needed
         charAnim.TriggerJumpAnim();
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayJump();
     }
 
     public void SetSpawnPoint(Vector3 newSpawnPoint)

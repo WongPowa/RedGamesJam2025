@@ -28,6 +28,7 @@ public class Obstacle : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
+            if (AudioManager.Instance != null) AudioManager.Instance.PlayObstacleHit();
             CharacterMovement characterMovement = collision.gameObject.GetComponent<CharacterMovement>();
             if (characterMovement != null)
             {

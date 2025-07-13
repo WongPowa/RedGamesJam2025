@@ -22,7 +22,7 @@ public class Springboard : MonoBehaviour
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
             rb.AddForce(Vector2.up * bounceForce, ForceMode2D.Impulse);
-
+            if (AudioManager.Instance != null) AudioManager.Instance.PlaySpringboard();
             //if (!hasBounced)
             //{
             //    //bounceForce += bounceForceIncrement;

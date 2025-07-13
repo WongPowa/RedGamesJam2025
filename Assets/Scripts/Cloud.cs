@@ -10,6 +10,7 @@ public class Cloud : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            if (AudioManager.Instance != null) AudioManager.Instance.PlayCloud();
             Rigidbody2D rb = other.GetComponent<Rigidbody2D>();
             if (rb != null && rb.linearVelocity.y > 0f) // Only slow if moving upward
             {
