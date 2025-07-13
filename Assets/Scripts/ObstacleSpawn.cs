@@ -12,59 +12,48 @@ public class ObstacleSpawn : MonoBehaviour
     [Header("Spawn Settings")]
     public float spawnCooldown = 2f;
     public int poolSize = 10;
-    public float spawnYAbovePlayer = 10f;
+    public float spawnYOffset = 2f;
 
     [Header("Springboard Settings")]
     public float approachThreshold = 20f;
-    private float globalBounceForce = 15f;
     public float bounceForceIncrement = 2f;
     public float springboardDespawnDistance = 30f;
-    private List<GameObject> activeSpringboards = new List<GameObject>();
-
-    [Header("Springboard Spawn Height Progression")]
     public float initialSpringboardHeight = 100f;
     public float heightMultiplier = 1.05f;
 
-    private float nextSpringboardY;
-    private float currentSpringboardGap;
-    private float lastSpringboardY = float.MinValue;
-
     [Header("Cloud Settings")]
     public float cloudSpawnInterval = 3f;
-    public float cloudMinYOffset = 1f;
-    public float cloudMaxYOffset = 5f;
     public float cloudDriftSpeed = 0.5f;
 
-    private float cooldownTimer = 1f;
-    private float cloudTimer = 0f;
-    private float screenWidthWorldUnits;
+    [Header("Spawner Positions")]
+    public float[] spawnXOffsets = new float[] { -6f, -2f, 2f, 6f }; // 4 predefined positions
 
+    private enum PoolType { Obstacle, Springboard, Cloud }
+
+    private Dictionary<PoolType, Queue<GameObject>> objectPools = new();
+    private List<GameObject> activeSpringboards = new();
+    private float cooldownTimer;
+    private float cloudTimer;
+    private float nextSpringboardY;
+    private float currentSpringboardGap;
+    private float globalBounceForce = 15f;
+    private float screenTopY;
     private Rigidbody2D playerRb;
-
-    private Queue<GameObject> obstaclePool = new Queue<GameObject>();
-    private Queue<GameObject> springboardPool = new Queue<GameObject>();
-    private Queue<GameObject> cloudPool = new Queue<GameObject>();
 
     private void Start()
     {
-        Vector3 screenBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0, 0));
-        screenWidthWorldUnits = screenBounds.x;
-
         playerRb = player.GetComponent<Rigidbody2D>();
+        screenTopY = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, 0)).y;
+
+        objectPools[PoolType.Obstacle] = new Queue<GameObject>();
+        objectPools[PoolType.Springboard] = new Queue<GameObject>();
+        objectPools[PoolType.Cloud] = new Queue<GameObject>();
 
         for (int i = 0; i < poolSize; i++)
         {
-            GameObject obj = Instantiate(obstaclePrefab);
-            obj.SetActive(false);
-            obstaclePool.Enqueue(obj);
-
-            GameObject spring = Instantiate(springboardPrefab);
-            spring.SetActive(false);
-            springboardPool.Enqueue(spring);
-
-            GameObject cloud = Instantiate(cloudPrefab);
-            cloud.SetActive(false);
-            cloudPool.Enqueue(cloud);
+            objectPools[PoolType.Obstacle].Enqueue(CreateInactive(obstaclePrefab));
+            objectPools[PoolType.Springboard].Enqueue(CreateInactive(springboardPrefab));
+            objectPools[PoolType.Cloud].Enqueue(CreateInactive(cloudPrefab));
         }
 
         nextSpringboardY = player.position.y + initialSpringboardHeight;
@@ -75,137 +64,109 @@ public class ObstacleSpawn : MonoBehaviour
     {
         if (player == null || playerRb == null) return;
 
-        Vector3 viewportPos = Camera.main.WorldToViewportPoint(player.position);
+        cooldownTimer -= Time.deltaTime;
+        cloudTimer -= Time.deltaTime;
 
-        // Timers
-        if (cooldownTimer > 0f) cooldownTimer -= Time.deltaTime;
-        if (cloudTimer > 0f) cloudTimer -= Time.deltaTime;
-
-        // Obstacle spawn
-        if (viewportPos.y <= 0.5f && cooldownTimer <= 0f)
+        if (cooldownTimer <= 0f)
         {
-            SpawnObstacle(); // Optional: enable if needed
+            SpawnObject(PoolType.Obstacle, obstaclePrefab);
             cooldownTimer = spawnCooldown;
         }
 
-        // Springboard spawn based on vertical height milestones
         if (player.position.y + approachThreshold >= nextSpringboardY)
         {
-            SpawnSpringboardAtHeight(nextSpringboardY);
-            lastSpringboardY = nextSpringboardY;
+            SpawnSpringboard(nextSpringboardY);
             currentSpringboardGap *= heightMultiplier;
             nextSpringboardY += currentSpringboardGap;
         }
 
-        // Cloud spawn
         if (cloudTimer <= 0f)
         {
             SpawnCloud();
             cloudTimer = cloudSpawnInterval;
         }
-        // Despawn springboards too far below the player
-        for (int i = activeSpringboards.Count - 1; i >= 0; i--)
-        {
-            GameObject sb = activeSpringboards[i];
-            if (sb.activeInHierarchy && sb.transform.position.y < player.position.y - springboardDespawnDistance)
-            {
-                sb.SetActive(false);
-                springboardPool.Enqueue(sb);
-                activeSpringboards.RemoveAt(i);
-            }
-        }
 
-    }
-    private void SpawnObstacle()
-    {
-        GameObject obstacle = GetFromPool(obstaclePool, obstaclePrefab);
-        if (obstacle == null) return;
-
-        Vector3 screenTopRight = Camera.main.ViewportToWorldPoint(new Vector3(1, 1, 0));
-        Vector3 screenTopLeft = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, 0));
-        float topY = screenTopRight.y + 1f;
-
-        Vector2 spawnPos = new Vector2(
-            Random.Range(screenTopLeft.x, screenTopRight.x),
-            topY
-        );
-
-        obstacle.transform.position = spawnPos;
-        obstacle.SetActive(true);
+        DespawnOldSpringboards();
     }
 
-    private void SpawnSpringboardAtHeight(float height)
+    private void SpawnObject(PoolType type, GameObject prefab)
     {
-        GameObject springboard = GetFromPool(springboardPool, springboardPrefab);
+        GameObject obj = GetFromPool(type, prefab);
+        if (obj == null) return;
+
+        float spawnX = spawnXOffsets[Random.Range(0, spawnXOffsets.Length)];
+        obj.transform.position = new Vector2(spawnX, screenTopY + spawnYOffset);
+        obj.SetActive(true);
+    }
+
+    private void SpawnSpringboard(float heightY)
+    {
+        GameObject springboard = GetFromPool(PoolType.Springboard, springboardPrefab);
         if (springboard == null) return;
 
-        Vector2 spawnPos = new Vector2(
-            Random.Range(-screenWidthWorldUnits, screenWidthWorldUnits),
-            height
-        );
+        float spawnX = spawnXOffsets[Random.Range(0, spawnXOffsets.Length)];
+        springboard.transform.position = new Vector2(spawnX, screenTopY + spawnYOffset); // Still spawn above screen
 
-        springboard.transform.position = spawnPos;
         springboard.SetActive(true);
-
-        Springboard sb = springboard.GetComponent<Springboard>();
-        if (sb != null)
-        {
+        if (springboard.TryGetComponent(out Springboard sb))
             sb.SetBounceForce(globalBounceForce);
-        }
 
         globalBounceForce += bounceForceIncrement;
-
-        // Track it for cleanup later
         activeSpringboards.Add(springboard);
     }
 
-
-
-
     private void SpawnCloud()
     {
-        GameObject cloud = GetFromPool(cloudPool, cloudPrefab);
+        GameObject cloud = GetFromPool(PoolType.Cloud, cloudPrefab);
         if (cloud == null) return;
 
-        Vector2 spawnPos = new Vector2(
-            Random.Range(-screenWidthWorldUnits, screenWidthWorldUnits),
-            player.position.y + spawnYAbovePlayer + Random.Range(cloudMinYOffset, cloudMaxYOffset)
-        );
-
-        cloud.transform.position = spawnPos;
+        float spawnX = spawnXOffsets[Random.Range(0, spawnXOffsets.Length)];
+        cloud.transform.position = new Vector2(spawnX, screenTopY + spawnYOffset);
         cloud.SetActive(true);
 
         if (cloud.TryGetComponent<Rigidbody2D>(out var rb))
-        {
             rb.linearVelocity = new Vector2(Random.Range(-cloudDriftSpeed, cloudDriftSpeed), 0f);
-        }
     }
 
-    private GameObject GetFromPool(Queue<GameObject> pool, GameObject prefab)
+    private void DespawnOldSpringboards()
     {
-        if (pool.Count > 0)
+        for (int i = activeSpringboards.Count - 1; i >= 0; i--)
         {
-            return pool.Dequeue();
+            GameObject sb = activeSpringboards[i];
+            if (sb.transform.position.y < player.position.y - springboardDespawnDistance)
+            {
+                sb.SetActive(false);
+                objectPools[PoolType.Springboard].Enqueue(sb);
+                activeSpringboards.RemoveAt(i);
+            }
         }
-
-        GameObject newObj = Instantiate(prefab);
-        return newObj;
     }
 
-    public void ReturnToPool(GameObject obj, string type = "obstacle")
+    private GameObject GetFromPool(PoolType type, GameObject prefab)
+    {
+        return objectPools[type].Count > 0 ? objectPools[type].Dequeue() : Instantiate(prefab);
+    }
+
+    private GameObject CreateInactive(GameObject prefab)
+    {
+        GameObject obj = Instantiate(prefab);
+        obj.SetActive(false);
+        return obj;
+    }
+
+    public void ReturnToPool(GameObject obj, string type)
     {
         obj.SetActive(false);
-
-        switch (type)
+        switch (type.ToLower())
         {
             case "springboard":
-                springboardPool.Enqueue(obj);
+                objectPools[PoolType.Springboard].Enqueue(obj);
                 break;
             case "cloud":
-                cloudPool.Enqueue(obj);
+                objectPools[PoolType.Cloud].Enqueue(obj);
                 break;
             default:
-                obstaclePool.Enqueue(obj);
+                objectPools[PoolType.Obstacle].Enqueue(obj);
                 break;
         }
     }
