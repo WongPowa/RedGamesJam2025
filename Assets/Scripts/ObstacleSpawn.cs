@@ -39,6 +39,22 @@ public class ObstacleSpawn : MonoBehaviour
     private float globalBounceForce = 15f;
     private float screenTopY;
     private Rigidbody2D playerRb;
+    private List<GameObject> activeObstacles = new();
+    private List<GameObject> activeClouds = new();
+
+    public static ObstacleSpawn Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private void Start()
     {
@@ -97,6 +113,8 @@ public class ObstacleSpawn : MonoBehaviour
         float spawnX = spawnXOffsets[Random.Range(0, spawnXOffsets.Length)];
         obj.transform.position = new Vector2(spawnX, GetCurrentScreenTopY() + spawnYOffset);
         obj.SetActive(true);
+        if (type == PoolType.Obstacle) activeObstacles.Add(obj);
+        if (type == PoolType.Cloud) activeClouds.Add(obj);
     }
 
     private void SpawnSpringboard(float heightY)
@@ -175,4 +193,26 @@ public class ObstacleSpawn : MonoBehaviour
         return Camera.main.ViewportToWorldPoint(new Vector3(0, 1, 0)).y;
     }
 
+
+    public void ClearAllObstacles()
+    {
+        foreach (var obj in activeObstacles)
+        {
+            obj.SetActive(false);
+            objectPools[PoolType.Obstacle].Enqueue(obj);
+        }
+        activeObstacles.Clear();
+        foreach (var sb in activeSpringboards)
+        {
+            sb.SetActive(false);
+            objectPools[PoolType.Springboard].Enqueue(sb);
+        }
+        activeSpringboards.Clear();
+        foreach (var cloud in activeClouds)
+        {
+            cloud.SetActive(false);
+            objectPools[PoolType.Cloud].Enqueue(cloud);
+        }
+        activeClouds.Clear();
+    }
 }
