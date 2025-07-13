@@ -2150,19 +2150,19 @@ PrefabInstance:
       objectReference: {fileID: 2164216475130804197, guid: d9f1e4731192a7a4db8487800b8b8fae, type: 3}
     - target: {fileID: 4924257354620673669, guid: 664a277088b002c438c7033062409925, type: 3}
       propertyPath: 'spawnXOffsets.Array.data[0]'
-      value: -2
+      value: -1.5
       objectReference: {fileID: 0}
     - target: {fileID: 4924257354620673669, guid: 664a277088b002c438c7033062409925, type: 3}
       propertyPath: 'spawnXOffsets.Array.data[1]'
-      value: -1
+      value: -0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4924257354620673669, guid: 664a277088b002c438c7033062409925, type: 3}
       propertyPath: 'spawnXOffsets.Array.data[2]'
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4924257354620673669, guid: 664a277088b002c438c7033062409925, type: 3}
       propertyPath: 'spawnXOffsets.Array.data[3]'
-      value: 2
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 5500541677576177350, guid: 664a277088b002c438c7033062409925, type: 3}
       propertyPath: m_LocalPosition.x

@@ -92,6 +92,8 @@ public class GameSession : MonoBehaviour
     
     public void StartGame()
     {
+        if (ObstacleSpawn.Instance != null)
+            ObstacleSpawn.Instance.ClearAllObstacles();
         gameActive = true;
         currentScore = 0;
         sessionStartTime = Time.time;
@@ -111,6 +113,8 @@ public class GameSession : MonoBehaviour
     
     public void RetryGame()
     {
+        if (ObstacleSpawn.Instance != null)
+            ObstacleSpawn.Instance.ClearAllObstacles();
         // Reset player position and start new game
         RespawnPlayer();
         StartGame();
