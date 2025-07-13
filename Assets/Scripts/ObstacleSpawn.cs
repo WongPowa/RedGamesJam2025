@@ -43,7 +43,7 @@ public class ObstacleSpawn : MonoBehaviour
     private void Start()
     {
         playerRb = player.GetComponent<Rigidbody2D>();
-        screenTopY = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, 0)).y;
+        //screenTopY = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, 0)).y;
 
         objectPools[PoolType.Obstacle] = new Queue<GameObject>();
         objectPools[PoolType.Springboard] = new Queue<GameObject>();
@@ -95,7 +95,7 @@ public class ObstacleSpawn : MonoBehaviour
         if (obj == null) return;
 
         float spawnX = spawnXOffsets[Random.Range(0, spawnXOffsets.Length)];
-        obj.transform.position = new Vector2(spawnX, screenTopY + spawnYOffset);
+        obj.transform.position = new Vector2(spawnX, GetCurrentScreenTopY() + spawnYOffset);
         obj.SetActive(true);
     }
 
@@ -105,7 +105,7 @@ public class ObstacleSpawn : MonoBehaviour
         if (springboard == null) return;
 
         float spawnX = spawnXOffsets[Random.Range(0, spawnXOffsets.Length)];
-        springboard.transform.position = new Vector2(spawnX, screenTopY + spawnYOffset); // Still spawn above screen
+        springboard.transform.position = new Vector2(spawnX, GetCurrentScreenTopY() + spawnYOffset);
 
         springboard.SetActive(true);
         if (springboard.TryGetComponent(out Springboard sb))
@@ -121,7 +121,7 @@ public class ObstacleSpawn : MonoBehaviour
         if (cloud == null) return;
 
         float spawnX = spawnXOffsets[Random.Range(0, spawnXOffsets.Length)];
-        cloud.transform.position = new Vector2(spawnX, screenTopY + spawnYOffset);
+        cloud.transform.position = new Vector2(spawnX, GetCurrentScreenTopY() + spawnYOffset);
         cloud.SetActive(true);
 
         if (cloud.TryGetComponent<Rigidbody2D>(out var rb))
@@ -170,4 +170,9 @@ public class ObstacleSpawn : MonoBehaviour
                 break;
         }
     }
+    private float GetCurrentScreenTopY()
+    {
+        return Camera.main.ViewportToWorldPoint(new Vector3(0, 1, 0)).y;
+    }
+
 }
