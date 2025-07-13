@@ -92,10 +92,10 @@ public partial class @MobileInput: IInputActionCollection2, IDisposable
             ""id"": ""f1dfe982-5f79-4ac3-9709-5ccd8a2ffc95"",
             ""actions"": [
                 {
-                    ""name"": ""TouchHold"",
-                    ""type"": ""Button"",
+                    ""name"": ""TouchPosition"",
+                    ""type"": ""Value"",
                     ""id"": ""33ec25e5-914d-42ef-8c87-bede0fbf5d77"",
-                    ""expectedControlType"": """",
+                    ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -117,17 +117,37 @@ public partial class @MobileInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""TouchPress"",
+                    ""type"": ""Button"",
+                    ""id"": ""a04944bd-c6bb-4933-baaf-09ffc42aeff5"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
                 {
                     ""name"": """",
                     ""id"": ""2d91651c-e57d-425d-810c-724af665ff97"",
-                    ""path"": ""<Touchscreen>/Press"",
+                    ""path"": ""<Touchscreen>/primaryTouch/position"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""TouchHold"",
+                    ""action"": ""TouchPosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2fcba2af-b6e8-4567-86b9-1580a9a1acf7"",
+                    ""path"": ""<Pointer>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""TouchPosition"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -152,6 +172,28 @@ public partial class @MobileInput: IInputActionCollection2, IDisposable
                     ""action"": ""Accelerometer"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""406dd95d-885a-4558-8ae7-61692ad1e815"",
+                    ""path"": ""<Touchscreen>/Press"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""TouchPress"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3df2f60a-b42e-414f-ba93-bead3bfd54b5"",
+                    ""path"": ""<Pointer>/press"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""TouchPress"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -160,9 +202,10 @@ public partial class @MobileInput: IInputActionCollection2, IDisposable
 }");
         // TouchScreen
         m_TouchScreen = asset.FindActionMap("TouchScreen", throwIfNotFound: true);
-        m_TouchScreen_TouchHold = m_TouchScreen.FindAction("TouchHold", throwIfNotFound: true);
+        m_TouchScreen_TouchPosition = m_TouchScreen.FindAction("TouchPosition", throwIfNotFound: true);
         m_TouchScreen_Gyroscope = m_TouchScreen.FindAction("Gyroscope", throwIfNotFound: true);
         m_TouchScreen_Accelerometer = m_TouchScreen.FindAction("Accelerometer", throwIfNotFound: true);
+        m_TouchScreen_TouchPress = m_TouchScreen.FindAction("TouchPress", throwIfNotFound: true);
     }
 
     ~@MobileInput()
@@ -243,9 +286,10 @@ public partial class @MobileInput: IInputActionCollection2, IDisposable
     // TouchScreen
     private readonly InputActionMap m_TouchScreen;
     private List<ITouchScreenActions> m_TouchScreenActionsCallbackInterfaces = new List<ITouchScreenActions>();
-    private readonly InputAction m_TouchScreen_TouchHold;
+    private readonly InputAction m_TouchScreen_TouchPosition;
     private readonly InputAction m_TouchScreen_Gyroscope;
     private readonly InputAction m_TouchScreen_Accelerometer;
+    private readonly InputAction m_TouchScreen_TouchPress;
     /// <summary>
     /// Provides access to input actions defined in input action map "TouchScreen".
     /// </summary>
@@ -258,9 +302,9 @@ public partial class @MobileInput: IInputActionCollection2, IDisposable
         /// </summary>
         public TouchScreenActions(@MobileInput wrapper) { m_Wrapper = wrapper; }
         /// <summary>
-        /// Provides access to the underlying input action "TouchScreen/TouchHold".
+        /// Provides access to the underlying input action "TouchScreen/TouchPosition".
         /// </summary>
-        public InputAction @TouchHold => m_Wrapper.m_TouchScreen_TouchHold;
+        public InputAction @TouchPosition => m_Wrapper.m_TouchScreen_TouchPosition;
         /// <summary>
         /// Provides access to the underlying input action "TouchScreen/Gyroscope".
         /// </summary>
@@ -269,6 +313,10 @@ public partial class @MobileInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "TouchScreen/Accelerometer".
         /// </summary>
         public InputAction @Accelerometer => m_Wrapper.m_TouchScreen_Accelerometer;
+        /// <summary>
+        /// Provides access to the underlying input action "TouchScreen/TouchPress".
+        /// </summary>
+        public InputAction @TouchPress => m_Wrapper.m_TouchScreen_TouchPress;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -295,15 +343,18 @@ public partial class @MobileInput: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_TouchScreenActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_TouchScreenActionsCallbackInterfaces.Add(instance);
-            @TouchHold.started += instance.OnTouchHold;
-            @TouchHold.performed += instance.OnTouchHold;
-            @TouchHold.canceled += instance.OnTouchHold;
+            @TouchPosition.started += instance.OnTouchPosition;
+            @TouchPosition.performed += instance.OnTouchPosition;
+            @TouchPosition.canceled += instance.OnTouchPosition;
             @Gyroscope.started += instance.OnGyroscope;
             @Gyroscope.performed += instance.OnGyroscope;
             @Gyroscope.canceled += instance.OnGyroscope;
             @Accelerometer.started += instance.OnAccelerometer;
             @Accelerometer.performed += instance.OnAccelerometer;
             @Accelerometer.canceled += instance.OnAccelerometer;
+            @TouchPress.started += instance.OnTouchPress;
+            @TouchPress.performed += instance.OnTouchPress;
+            @TouchPress.canceled += instance.OnTouchPress;
         }
 
         /// <summary>
@@ -315,15 +366,18 @@ public partial class @MobileInput: IInputActionCollection2, IDisposable
         /// <seealso cref="TouchScreenActions" />
         private void UnregisterCallbacks(ITouchScreenActions instance)
         {
-            @TouchHold.started -= instance.OnTouchHold;
-            @TouchHold.performed -= instance.OnTouchHold;
-            @TouchHold.canceled -= instance.OnTouchHold;
+            @TouchPosition.started -= instance.OnTouchPosition;
+            @TouchPosition.performed -= instance.OnTouchPosition;
+            @TouchPosition.canceled -= instance.OnTouchPosition;
             @Gyroscope.started -= instance.OnGyroscope;
             @Gyroscope.performed -= instance.OnGyroscope;
             @Gyroscope.canceled -= instance.OnGyroscope;
             @Accelerometer.started -= instance.OnAccelerometer;
             @Accelerometer.performed -= instance.OnAccelerometer;
             @Accelerometer.canceled -= instance.OnAccelerometer;
+            @TouchPress.started -= instance.OnTouchPress;
+            @TouchPress.performed -= instance.OnTouchPress;
+            @TouchPress.canceled -= instance.OnTouchPress;
         }
 
         /// <summary>
@@ -365,12 +419,12 @@ public partial class @MobileInput: IInputActionCollection2, IDisposable
     public interface ITouchScreenActions
     {
         /// <summary>
-        /// Method invoked when associated input action "TouchHold" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "TouchPosition" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnTouchHold(InputAction.CallbackContext context);
+        void OnTouchPosition(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Gyroscope" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
@@ -385,5 +439,12 @@ public partial class @MobileInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnAccelerometer(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "TouchPress" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnTouchPress(InputAction.CallbackContext context);
     }
 }

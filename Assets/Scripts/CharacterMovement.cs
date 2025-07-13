@@ -1,12 +1,21 @@
 using UnityEngine;
 using TMPro;
-
+using System.Collections;
 
 public enum movementState
 {
     Jumping,
     Falling,
     Neutral,
+    Dashing,
+}
+
+public enum characterBuds
+{
+    Biggie,
+    Tappy,
+    Bam,
+    Ogu,
 }
 
 public class CharacterMovement : MonoBehaviour
@@ -25,6 +34,14 @@ public class CharacterMovement : MonoBehaviour
     private bool isStunned = false;
     private float stunTimer = 0f;
     private float stunFallVelocity = -10f;
+
+    // Dash cooldown
+    [Header("Dash Settings")]
+    [SerializeField] private float dashPower = 10f;
+    [SerializeField] private float dashDuration = 0.2f;
+    [SerializeField] private float dashCooldown = 2f;
+    private bool canDash = true;
+    private bool isDashing = false;
 
     private void Awake()
     {
@@ -106,6 +123,80 @@ public class CharacterMovement : MonoBehaviour
         return spawnPoint;
     }
 
+    public void UseAbility(SwipeDirection swipeDirection)
+    {
+        switch (currBud)
+        {
+            case characterBuds.Biggie:
+                switch (swipeDirection)
+                {
+                    case SwipeDirection.Up:
+                        Dash(Vector2.up);
+                        break;
+                    case SwipeDirection.Down:
+                        Dash(Vector2.down);
+                        break;
+                    case SwipeDirection.Left:
+                        Dash(Vector2.left);
+                        break;
+                    case SwipeDirection.Right:
+                        break;
+                    case SwipeDirection.UpRight:
+                        Dash(new Vector2(1f, 1f));
+                        break;
+                    case SwipeDirection.UpLeft:
+                        Dash(new Vector2(-1f, 1f));
+                        break;
+                    case SwipeDirection.DownRight:
+                        Dash(new Vector2(1f, -1f));
+                        break;
+                    case SwipeDirection.DownLeft:
+                        Dash(new Vector2(-1f, -1f));
+                        break;
+                }
+                break;
+            case characterBuds.Tappy:
+                break;
+            case characterBuds.Bam:
+                break;
+            case characterBuds.Ogu:
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void Dash(Vector2 direction)
+    {
+        if (!canDash || isDashing || rigidBody2D == null) return;
+
+        StartCoroutine(DashRoutine(direction));
+    }
+
+    private IEnumerator DashRoutine(Vector2 direction)
+    {
+        canDash = false;
+        isDashing = true;
+        currMovementState = movementState.Dashing;
+
+        // Clear current velocity for consistency
+        Vector2 cacheVelocity = rigidBody2D.linearVelocity;
+        rigidBody2D.linearVelocity = Vector2.zero;
+
+        // Apply dash force
+        rigidBody2D.AddForce(direction.normalized * dashPower, ForceMode2D.Impulse);
+
+        yield return new WaitForSeconds(dashDuration);
+
+        isDashing = false;
+        currMovementState = movementState.Falling;
+        //rigidBody2D.linearVelocity += cacheVelocity;
+
+        // Begin cooldown
+        yield return new WaitForSeconds(dashCooldown);
+        canDash = true;
+    }
+
     public void Stun(float duration)
     {
         isStunned = true;
@@ -132,26 +223,30 @@ public class CharacterMovement : MonoBehaviour
             }
             return;
         }
-        float currVelocityY = rigidBody2D.linearVelocityY;
 
-        if (currVelocityY > 0.1f)
-        {
-            currMovementState = movementState.Jumping;
-        }
-        else if (currVelocityY < -0.1f)
-        {
-            currMovementState = movementState.Falling;
-        }
-        else
-        {
-            currMovementState = movementState.Neutral;
+        if (isDashing) return
+
+            float currVelocityY = rigidBody2D.linearVelocityY;
+
+            if (currVelocityY > 0.1f)
+            {
+                currMovementState = movementState.Jumping;
+            }
+            else if (currVelocityY < -0.1f)
+            {
+                currMovementState = movementState.Falling;
+            }
+            else
+            {
+                currMovementState = movementState.Neutral;
+            }
         }
     }
 
     private void FixedUpdate()
     {
         if (isStunned) return;
-        if (touchManager != null)
+        if (touchManager != null && !isDashing)
         {
             Vector2 tiltVector;
 

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Events;
 using TMPro;
 using UnityEngine.InputSystem.XR.Haptics;
 using JetBrains.Annotations;
@@ -17,6 +18,18 @@ public enum TiltingState
     Stable
 }
 
+public enum SwipeDirection
+{
+    Up,
+    Down,
+    Left,
+    Right,
+    UpRight,
+    UpLeft,
+    DownRight,
+    DownLeft
+}
+
 public class TouchManager : MonoBehaviour
 {
     //public InputAction touchAction;
@@ -24,6 +37,13 @@ public class TouchManager : MonoBehaviour
     public CharacterMovement charMovement;
     private MobileInput mobileInput;
     public CurrentTiltStateData currentTilt;
+
+    [Header("Detect Swipe Direction")]
+    public UnityEvent<SwipeDirection> e_SwipeCalled;
+    //public TextMeshProUGUI swipeDirectionText;
+    [SerializeField] private SwipeDirection swipeDirection;
+    [SerializeField] private Vector2 startTouchPos;
+    [SerializeField] private Vector2 endTouchPos;
 
     private void Awake()
     {
@@ -45,7 +65,8 @@ public class TouchManager : MonoBehaviour
 
         mobileInput = new MobileInput();
         mobileInput.TouchScreen.Enable();
-        //mobileInput.TouchScreen.TouchHold.performed += LaunchChar;
+        mobileInput.TouchScreen.TouchPress.started += OnTouchStart;
+        mobileInput.TouchScreen.TouchPress.canceled += OnTouchEnd;
         InputSystem.EnableDevice(UnityEngine.InputSystem.Gyroscope.current);
         InputSystem.EnableDevice(UnityEngine.InputSystem.Accelerometer.current);
         //mobileInput.TouchScreen.Gyroscope.performed += UpdateGyroInput;
@@ -54,12 +75,54 @@ public class TouchManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        //mobileInput.TouchScreen.TouchHold.performed -= LaunchChar;
+        mobileInput.TouchScreen.TouchPress.started -= OnTouchStart;
+        mobileInput.TouchScreen.TouchPress.canceled -= OnTouchEnd;
         //mobileInput.TouchScreen.Gyroscope.performed -= UpdateGyroInput;
         mobileInput.TouchScreen.Accelerometer.performed -= UpdateAccelInput;
         mobileInput.Dispose();
     }
 
+    private void OnTouchStart(InputAction.CallbackContext context)
+    {
+        startTouchPos = mobileInput.TouchScreen.TouchPosition.ReadValue<Vector2>();
+    }
+
+    private void OnTouchEnd(InputAction.CallbackContext context)
+    {
+        endTouchPos = mobileInput.TouchScreen.TouchPosition.ReadValue<Vector2>();
+        DetectSwipeDirection();
+    }
+
+    private void DetectSwipeDirection()
+    {
+        Vector2 swipe = endTouchPos - startTouchPos;
+        if (swipe.magnitude < 50f) // Minimum swipe distance to detect
+            return;
+
+        float angle = Mathf.Atan2(swipe.y, swipe.x) * Mathf.Rad2Deg;
+
+        if (angle >= -22.5f && angle < 22.5f)
+            swipeDirection = SwipeDirection.Right;
+        else if (angle >= 22.5f && angle < 67.5f)
+            swipeDirection = SwipeDirection.UpRight;
+        else if (angle >= 67.5f && angle < 112.5f)
+            swipeDirection = SwipeDirection.Up;
+        else if (angle >= 112.5f && angle < 157.5f)
+            swipeDirection = SwipeDirection.UpLeft;
+        else if ((angle >= 157.5f && angle <= 180f) || (angle >= -180f && angle < -157.5f))
+            swipeDirection = SwipeDirection.Left;
+        else if (angle >= -157.5f && angle < -112.5f)
+            swipeDirection = SwipeDirection.DownLeft;
+        else if (angle >= -112.5f && angle < -67.5f)
+            swipeDirection = SwipeDirection.Down;
+        else if (angle >= -67.5f && angle < -22.5f)
+            swipeDirection = SwipeDirection.DownRight;
+
+        //swipeDirectionText.text = swipeDirection.ToString();
+        e_SwipeCalled.Invoke(swipeDirection);
+    }
+
+    // Used for Debugging Purposes
     private void LaunchChar(InputAction.CallbackContext context)
     {
         charMovement.LaunchCharacter();
@@ -83,8 +146,5 @@ public class TouchManager : MonoBehaviour
         {
             currentTilt.state = TiltingState.Stable;
         }
-        
     }
-
-
 }
