@@ -7,7 +7,8 @@ public class GameSession : MonoBehaviour
     [SerializeField] private int currentScore = 0;
     [SerializeField] private float sessionStartTime;
     [SerializeField] private bool gameActive = false;
-    
+    [SerializeField] private float fallBuffer = 2f;
+
     [Header("Scoring")]
     [SerializeField] private float heightMultiplier = 10f;
     [SerializeField] private bool showHeightDebug = false;
@@ -229,21 +230,22 @@ public class GameSession : MonoBehaviour
             }
         }
     }
-    
+
     void CheckGameEnd()
     {
         if (playerTransform != null)
         {
-            // Get the bottom-left corner of the screen in world space
             float screenBottomY = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, Camera.main.nearClipPlane)).y;
 
-            if (playerTransform.position.y < screenBottomY)
+            float deathYThreshold = screenBottomY - fallBuffer;
+
+            if (playerTransform.position.y < deathYThreshold)
             {
                 EndGame();
             }
         }
     }
-    
+
     public void AddScore(int points)
     {
         if (!gameActive) return;
