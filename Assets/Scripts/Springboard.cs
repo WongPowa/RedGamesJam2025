@@ -5,9 +5,15 @@ public class Springboard : MonoBehaviour
     [Header("Bounce Settings")]
     public float bounceForce = 20f;          
     //public float bounceForceIncrement = 2f;  
-    public float minYDifference = 0.1f;      
+    public float minYDifference = 0.1f;
+    private Animator anim;
 
-    private bool hasBounced = false;         
+    private bool hasBounced = false;
+
+    private void Start()
+    {
+        anim = GetComponent<Animator>();
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -22,6 +28,7 @@ public class Springboard : MonoBehaviour
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
             rb.AddForce(Vector2.up * bounceForce, ForceMode2D.Impulse);
+            anim.SetTrigger("bounce");
             if (AudioManager.Instance != null) AudioManager.Instance.PlaySpringboard();
             //if (!hasBounced)
             //{
